@@ -1,4 +1,5 @@
 # main.py
+from volume import handle_volume_adjustment
 
 if __name__ == "__main__":
     while True:
@@ -13,5 +14,8 @@ if __name__ == "__main__":
         if action.upper() == "Q":
             print("Exiting interface...")
             break
+        elif action == "1":
+            handle_volume_adjustment()
+
 
             
