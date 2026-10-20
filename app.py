@@ -22,6 +22,15 @@ def play_music():
     else:
         st.error("Failed to start music playback.")
 
+def pause_music():
+    from services.sonos import pause_music
+    success = pause_music()
+    
+    if success:
+        st.toast("Music playback paused.")
+    else:
+        st.error("Failed to pause music playback.")
+
 # Links a slider to the update_volume function
 st.slider(
     "Volume Level", 
@@ -34,3 +43,4 @@ st.slider(
 )
 
 st.button("Play Music", on_click=play_music)
+st.button("Pause Music", on_click=pause_music)
