@@ -13,6 +13,15 @@ def update_volume():
     else:
         st.error("Failed to connect to the Sonos speaker.")
 
+def play_music():
+    from services.sonos import play_music
+    success = play_music()
+    
+    if success:
+        st.toast("Music playback started.")
+    else:
+        st.error("Failed to start music playback.")
+
 # Links a slider to the update_volume function
 st.slider(
     "Volume Level", 
@@ -23,3 +32,5 @@ st.slider(
     key="volume_slider",
     on_change=update_volume
 )
+
+st.button("Play Music", on_click=play_music)
