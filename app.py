@@ -31,16 +31,39 @@ def pause_music():
     else:
         st.error("Failed to pause music playback.")
 
+def next_track():
+    from services.sonos import next_track
+    success = next_track()
+    
+    if success:
+        st.toast("Skipped to the next track.")
+    else:
+        st.error("Failed to skip to the next track.")
+
+def previous_track():
+    from services.sonos import previous_track
+    success = previous_track()
+    
+    if success:
+        st.toast("Went back to the previous track.")
+    else:
+        st.error("Failed to go back to the previous track.")
+
 # Links a slider to the update_volume function
-st.slider(
-    "Volume Level", 
+
+st.slider ("Volume Level", 
     min_value=0, 
     max_value=100, 
     value=25, 
     step=1,
     key="volume_slider",
-    on_change=update_volume
-)
+    on_change=update_volume)
 
-st.button("Play Music", on_click=play_music)
-st.button("Pause Music", on_click=pause_music)
+
+col1, col2, col3, col4 = st.columns(4) 
+col1.button(":previous_track_button:", on_click=previous_track, use_container_width=True)
+col2.button("▶", on_click=play_music, use_container_width=True)
+col3.button(":pause_button:", on_click=pause_music, use_container_width=True)
+col4.button(":next_track_button:", on_click=next_track, use_container_width=True)
+
+
