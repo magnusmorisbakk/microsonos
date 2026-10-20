@@ -1,7 +1,7 @@
-# volume.py
-import requests
-import uuid
+# sonos.py
 import os
+import uuid
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -9,18 +9,8 @@ SPEAKER_IP = os.getenv("SPEAKER_IP")
 X_SONOS_API_KEY = os.getenv("X-SONOS-API-KEY")
 X_SONOS_TARGET_UDN = os.getenv("X-SONOS-TARGET-UDN")
 
-def handle_volume_adjustment():
-    while True:
-        action = input("\nSet volume level (0-100) or [B] to go back: ")
-
-        if action.upper() == "B":
-            break
-        elif action.isdigit() and 0 <= int(action) <= 100:
-            volume_level = int(action)
-            set_volume_level(volume_level)
-
-def set_volume_level(volume_level):
-    print(f"\nSetting volume to {volume_level} on the Sonos speaker.")
+def set_volume_level(volume_level: int) -> bool:
+    """Sets the volume on the Sonos speaker. Returns True if successful."""
     url = f"http://{SPEAKER_IP}:1400/MediaRenderer/RenderingControl/Control"
     
     headers = {
@@ -40,8 +30,10 @@ def set_volume_level(volume_level):
         </u:SetVolume>
     </s:Body>
 </s:Envelope>"""
+
     try:
         response = requests.post(url, headers=headers, data=body, timeout=3)
         return response.status_code == 200
-    except requests.RequestException:
+    except requests.RequestException as e:
+        print(f"Error communicating with Sonos: {e}")
         return False
