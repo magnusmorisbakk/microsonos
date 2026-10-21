@@ -1,9 +1,10 @@
 # sonos.py
-# from urllib import response
 import uuid
 import requests
 from utils.config import SPEAKER_IP, X_SONOS_API_KEY, X_SONOS_TARGET_UDN
 import xml.etree.ElementTree as ET
+
+session = requests.Session()
 
 def retrieve_volume():
     """Sets the volume on the Sonos speaker. Returns True if successful."""

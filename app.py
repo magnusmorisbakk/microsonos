@@ -1,54 +1,71 @@
 # app.py
 import streamlit as st
-from services.sonos import set_volume_level
 from services.sonos import retrieve_volume
+import requests
+
+API_ENDPOINT = "http://localhost:8000"
 
 st.title("Sonos Controller Interface")
 
+def retrieve_volume():
+    try:
+        res = requests.get(f"{API_ENDPOINT}/volume", timeout=4)
+        if res.status_code == 200:
+            return res.json().get("volume", 0)
+    except requests.RequestException:
+        pass
+    return 0
+
 def update_volume():
-    volume = st.session_state.volume_slider # Get the current value of the slider
-    success = set_volume_level(volume) 
-    
-    if success:
-        st.toast(f"Volume set to {volume}%") # Notify the user of volume change
-    else:
-        st.error("Failed to connect to the Sonos speaker.")
+    volume = st.session_state.volume_slider
+    try:
+        res = requests.post(f"{API_ENDPOINT}/volume", json={"volume": volume}, timeout=4)
+        if res.status_code == 200:
+            st.toast(f"Volume set to {volume}")
+        else:
+            st.error("Failed to connect to sonos speaker")
+    except requests.RequestException:
+        st.error("Failed to connect to sonos speaker")
 
 def play_music():
-    from services.sonos import play_music
-    success = play_music()
-    
-    if success:
-        st.toast("Music playback started.")
-    else:
-        st.error("Failed to start music playback.")
+    try:
+        res = requests.post(f"{API_ENDPOINT}/play", timeout=4)
+        if res.status_code == 200:
+            st.toast("Started music playback")
+        else:
+            st.error("Failed to start music playback")
+    except requests.RequestException:
+        st.error("Failed to start music playback")
 
 def pause_music():
-    from services.sonos import pause_music
-    success = pause_music()
-    
-    if success:
-        st.toast("Music playback paused.")
-    else:
-        st.error("Failed to pause music playback.")
+    try:
+        res = requests.post(f"{API_ENDPOINT}/pause", timeout=4)
+        if res.status_code == 200:
+            st.toast("Paused track")
+        else:
+            st.error("Failed to pause track")
+    except requests.RequestException:
+        st.error("Failed to pause track")    
 
 def next_track():
-    from services.sonos import next_track
-    success = next_track()
-    
-    if success:
-        st.toast("Skipped to the next track.")
-    else:
-        st.error("Failed to skip to the next track.")
+    try:
+        res = requests.post(f"{API_ENDPOINT}/next", timeout=4)
+        if res.status_code == 200:
+            st.toast("Skipped track")
+        else:
+            st.error("Failed to skip track")
+    except requests.RequestException:
+        st.error("Failed to skip track")   
 
 def previous_track():
-    from services.sonos import previous_track
-    success = previous_track()
-    
-    if success:
-        st.toast("Went back to the previous track.")
-    else:
-        st.error("Failed to go back to the previous track.")
+    try:
+        res = requests.post(f"{API_ENDPOINT}/previous", timeout=4)
+        if res.status_code == 200:
+            st.toast("Previous track")
+        else:
+            st.error("Failed to go back to previous track")
+    except requests.RequestException:
+        st.error("Failed to skip track") 
 
 # Links a slider to the update_volume function
 
