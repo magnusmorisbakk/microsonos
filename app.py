@@ -2,6 +2,7 @@
 import streamlit as st
 from services.sonos import set_volume_level
 from services.sonos import retrieve_volume
+import services.spotify
 
 st.title("Sonos Controller Interface")
 
@@ -32,20 +33,18 @@ def pause_music():
     else:
         st.error("Failed to pause music playback.")
 
-def next_track():
-    from services.sonos import next_track
-    success = next_track()
+def handle_next_track():
+    success = services.spotify.sp.next_track()
     
-    if success:
+    if success is None:
         st.toast("Skipped to the next track.")
     else:
         st.error("Failed to skip to the next track.")
 
 def previous_track():
-    from services.sonos import previous_track
-    success = previous_track()
+    success = services.spotify.sp.previous_track()
     
-    if success:
+    if success is None:
         st.toast("Went back to the previous track.")
     else:
         st.error("Failed to go back to the previous track.")
@@ -65,6 +64,6 @@ col1, col2, col3, col4 = st.columns(4)
 col1.button(":previous_track_button:", on_click=previous_track, use_container_width=True)
 col2.button("▶", on_click=play_music, use_container_width=True)
 col3.button(":pause_button:", on_click=pause_music, use_container_width=True)
-col4.button(":next_track_button:", on_click=next_track, use_container_width=True)
+col4.button(":next_track_button:", on_click=handle_next_track, use_container_width=True)
 
 

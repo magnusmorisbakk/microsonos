@@ -1,23 +1,22 @@
 # microsonos
-Lightweight local controller for Sonos speakers reverse enginnered from UPnP/SOAP network traffic.
+Lightweight local controller for Sonos speakers reverse enginnered from UPnP/SOAP network traffic. Communicates directly with Sonos speaker over local network for playback and volume control, as well as integrating the Spotify Web API for spotify related functions. The goal of the project is to explore network protocol analysis, reverse engineering and API integration.
 
----
 ## Featues
 * Volume Control
 * Playback Control
+* Skip/Previous Song Control
 * Current Volume Retrieval
 * .env based config
 
----
 ## Tech Stack
 
 * Python
 * Streamlit
 * Sonos API Integration
+* Spotify API Integration
 
----
 ## Project Structure
-```
+
 microsonos/
 ├─ app.py
 ├─ utils/
@@ -26,14 +25,13 @@ microsonos/
 │  └─ sonos.py 
 ├─ .env
 └─ .gitignore
+
 ```
----
 ## Requirements
 * Python
 * A Sonos speaker accessible from the client running the application
 * The required API access and config for Sonos integration
 
----
 ## Installation
 ### Clone Repository
 ```bash
@@ -44,6 +42,7 @@ cd microsonos
 ```bash
 python -m venv .venv
 ```
+
 Activate environment:
 
 **PowerShell**
@@ -58,9 +57,15 @@ pip install streamlit python-dotenv
 
 ### Configure env variables
 ```
+# Sonos variables
 SPEAKER_IP=your_sonos_speaker_ip
 X-SONOS-API-KEY=your_sonos_api_key
 X-SONOS-TARGET-UDN=your_sonos_udn
+
+# Spotify variables
+SPOTIFY_CLIENT_ID=your_unique_app_identifier
+SPOTIFY_CLIENT_SECRET=ypir_authentication_key
+REDIRECT_URI=http://127.0.0.1:8888/callback
 ```
 
 ### Start the application
