@@ -1,6 +1,7 @@
 # app.py
 import streamlit as st
 from services.sonos import set_volume_level
+from services.sonos import retrieve_volume
 
 st.title("Sonos Controller Interface")
 
@@ -54,7 +55,7 @@ def previous_track():
 st.slider ("Volume Level", 
     min_value=0, 
     max_value=100, 
-    value=25, 
+    value=retrieve_volume(), 
     step=1,
     key="volume_slider",
     on_change=update_volume)
