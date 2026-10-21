@@ -26,7 +26,7 @@ microsonos/
 ├─ .env
 └─ .gitignore
 
-```
+
 ## Requirements
 * Python
 * A Sonos speaker accessible from the client running the application
