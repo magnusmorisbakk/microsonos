@@ -49,7 +49,27 @@ def previous_track():
     else:
         st.error("Failed to go back to the previous track.")
 
+#def currently_playing():
+    #success = services.spotify.get_currently_playing()
+
+    #if success:
+       # st.toast({success})
+    #else:
+        #st.error("Failed to retrieve current playing song.")
+
 # Links a slider to the update_volume function
+
+@st.fragment(run_every="5s")
+def display_current_album():
+    image_url = services.spotify.get_currently_playing()
+
+    col1, col2, col3 = st.columns([1,2,1])
+
+    with col2:
+        if image_url:
+            col2.image(image_url, width=250)
+
+display_current_album()
 
 st.slider ("Volume Level", 
     min_value=0, 
@@ -65,5 +85,6 @@ col1.button(":previous_track_button:", on_click=previous_track, use_container_wi
 col2.button("▶", on_click=play_music, use_container_width=True)
 col3.button(":pause_button:", on_click=pause_music, use_container_width=True)
 col4.button(":next_track_button:", on_click=next_track, use_container_width=True)
+
 
 

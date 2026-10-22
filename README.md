@@ -1,5 +1,5 @@
 # microsonos
-Lightweight local controller for Sonos speakers reverse enginnered from UPnP/SOAP network traffic. Communicates directly with Sonos speaker over local network for playback and volume control, as well as integrating the Spotify Web API for spotify related functions. The goal of the project is to explore network protocol analysis, reverse engineering and API integration.
+Lightweight local controller for Sonos speakers reverse engineered from UPnP/SOAP network traffic. Communicates directly with Sonos speaker over local network for playback and volume control, as well as integrating the Spotify Web API for spotify related functions. The goal of the project is to explore network protocol analysis, reverse engineering and API integration.
 
 ## Featues
 * Volume Control
@@ -16,7 +16,7 @@ Lightweight local controller for Sonos speakers reverse enginnered from UPnP/SOA
 * Spotify API Integration
 
 ## Project Structure
-
+```
 microsonos/
 ├─ app.py
 ├─ utils/
@@ -25,7 +25,7 @@ microsonos/
 │  └─ sonos.py 
 ├─ .env
 └─ .gitignore
-
+```
 
 ## Requirements
 * Python
