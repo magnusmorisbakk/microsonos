@@ -2,7 +2,7 @@
 # from urllib import response
 import uuid
 import requests
-from utils.config import SPEAKER_IP, X_SONOS_API_KEY, X_SONOS_TARGET_UDN
+from utils.config import SPEAKER_IP
 import xml.etree.ElementTree as ET
 
 def retrieve_volume():
@@ -12,9 +12,6 @@ def retrieve_volume():
     headers = {
         "Content-Type": 'text/xml; charset="utf-8"',
         "SOAPACTION": '"urn:schemas-upnp-org:service:RenderingControl:1#GetVolume"',
-        "X-Sonos-Api-Key": X_SONOS_API_KEY,
-        "X-Sonos-Corr-Id": str(uuid.uuid4()),
-        "X-SONOS-TARGET-UDN": X_SONOS_TARGET_UDN
         }
         
     body = f"""<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
@@ -49,9 +46,6 @@ def set_volume_level(volume_level: int) -> bool:
     headers = {
         "Content-Type": 'text/xml; charset="utf-8"',
         "SOAPACTION": '"urn:schemas-upnp-org:service:RenderingControl:1#SetVolume"',
-        "X-Sonos-Api-Key": X_SONOS_API_KEY,
-        "X-Sonos-Corr-Id": str(uuid.uuid4()),
-        "X-SONOS-TARGET-UDN": X_SONOS_TARGET_UDN
     }
     
     body = f"""<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
@@ -78,9 +72,6 @@ def play_music():
     headers = {
         "Content-Type": 'text/xml; charset="utf-8"',
         "SOAPACTION": '"urn:schemas-upnp-org:service:AVTransport:1#Play"',
-        "X-Sonos-Api-Key": X_SONOS_API_KEY,
-        "X-Sonos-Corr-Id": str(uuid.uuid4()),
-        "X-SONOS-TARGET-UDN": X_SONOS_TARGET_UDN
     }
     
     body = f"""<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
@@ -106,9 +97,6 @@ def pause_music():
     headers = {
         "Content-Type": 'text/xml; charset="utf-8"',
         "SOAPACTION": '"urn:schemas-upnp-org:service:AVTransport:1#Pause"',
-        "X-Sonos-Api-Key": X_SONOS_API_KEY,
-        "X-Sonos-Corr-Id": str(uuid.uuid4()),
-        "X-SONOS-TARGET-UDN": X_SONOS_TARGET_UDN
     }
     
     body = f"""<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
@@ -133,9 +121,6 @@ def next_track():
     headers = {
         "Content-Type": 'text/xml; charset="utf-8"',
         "SOAPACTION": '"urn:schemas-upnp-org:service:AVTransport:1#Next"',
-        "X-Sonos-Api-Key": X_SONOS_API_KEY,
-        "X-Sonos-Corr-Id": str(uuid.uuid4()),
-        "X-SONOS-TARGET-UDN": X_SONOS_TARGET_UDN
     }
     
     body = f"""<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
@@ -160,9 +145,6 @@ def previous_track():
     headers = {
         "Content-Type": 'text/xml; charset="utf-8"',
         "SOAPACTION": '"urn:schemas-upnp-org:service:AVTransport:1#Previous"',
-        "X-Sonos-Api-Key": X_SONOS_API_KEY,
-        "X-Sonos-Corr-Id": str(uuid.uuid4()),
-        "X-SONOS-TARGET-UDN": X_SONOS_TARGET_UDN
     }
     
     body = f"""<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">

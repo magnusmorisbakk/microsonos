@@ -59,8 +59,6 @@ pip install streamlit python-dotenv
 ```
 # Sonos variables
 SPEAKER_IP=your_sonos_speaker_ip
-X-SONOS-API-KEY=your_sonos_api_key
-X-SONOS-TARGET-UDN=your_sonos_udn
 
 # Spotify variables
 SPOTIFY_CLIENT_ID=your_unique_app_identifier
