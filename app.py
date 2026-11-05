@@ -10,46 +10,7 @@ st.title("Sonos Controller Interface")
 
 track_info = get_sonos_playback_info()
 
-if track_info:
-    st.subheader("Now Playing")
-
-    metadata = track_info['trackMetaData']
-    if metadata:
-        try:
-            root = ET.fromstring(metadata)
-
-            namespace = {'dc': 'http://purl.org/dc/elements/1.1/', 
-                         'upnp': 'urn:schemas-upnp-org:metadata-1-0/upnp/'
-                         }
-            
-            title = root.find('.//dc:title', namespace)
-            artist = root.find('.//dc:creator', namespace)
-            album = root.find('.//upnp:album', namespace)
-            album_art = root.find('.//upnp:albumArtURI', namespace)
-
-            if album_art is not None and album_art.text:
-                album_art_url = album_art.text
-                st.image(album_art_url, width=200)
-
-            st.write(f"Title: {title.text if title is not None else 'Unknown'}")
-            st.write(f"Artist: {artist.text if artist is not None else 'Unknown'}")
-            st.write(f"Album: {album.text if album is not None else 'Unknown'}")
-            
-
-        except ET.ParseError:
-            st.error("Failed to parse track metadata.")
-    else:
-        st.write("No metadata available for the current track.")
-
-
-def update_volume():
-    volume = st.session_state.volume_slider # Get the current value of the slider
-    success = post_set_volume(volume) 
-    
-    if success:
-        st.toast(f"Volume set to {volume}%") # Notify the user of volume change
-    else:
-        st.error("Failed to connect to the Sonos speaker.")
+# ------ Playback Controls ------
 
 def play_music():
     success = post_play_music()
@@ -83,20 +44,71 @@ def previous_track():
     else:
         st.error("Failed to go back to the previous track.")
 
-st.slider ("Volume Level", 
+# ------ Volume Control ------
+
+def update_volume():
+    volume = st.session_state.volume_slider # Get the current value of the slider
+    success = post_set_volume(volume) 
+    
+    if success:
+        st.toast(f"Volume set to {volume}%") # Notify the user of volume change
+    else:
+        st.error("Failed to connect to the Sonos speaker.")
+
+# ------ Currently Playing ------
+
+track_info = get_sonos_playback_info()
+
+with st.container(border=True):
+    if track_info:
+        metadata = track_info['trackMetaData']
+
+        if metadata:
+            try:
+                root = ET.fromstring(metadata)
+
+                namespace = {'dc': 'http://purl.org/dc/elements/1.1/', 
+                             'upnp': 'urn:schemas-upnp-org:metadata-1-0/upnp/'
+                             }
+            
+                title = root.find('.//dc:title', namespace)
+                artist = root.find('.//dc:creator', namespace)
+                album = root.find('.//upnp:album', namespace)
+                album_art = root.find('.//upnp:albumArtURI', namespace)
+
+                col1, col2 = st.columns([1, 2])
+
+                with col1:
+                    if album_art is not None and album_art.text:
+                        album_art_url = album_art.text
+                        st.image(album_art_url, width='content')
+
+                with col2:
+                    st.markdown(title.text if title is not None else 'Unknown')
+                    st.markdown(artist.text if artist is not None else 'Unknown')
+                    st.markdown(album.text if album is not None else 'Unknown')
+
+                st.write("")
+
+                col_prev, col_play, col_pause, col_next = st.columns(4)
+
+                col_prev.button(":previous_track_button:", on_click=previous_track, use_container_width=True)
+                col_play.button("▶", on_click=play_music, use_container_width=True)
+                col_pause.button(":pause_button:", on_click=pause_music, use_container_width=True)
+                col_next.button(":next_track_button:", on_click=next_track, use_container_width=True)
+
+            except ET.ParseError:
+                st.error("Failed to parse track metadata.")
+        else:
+            st.write("No metadata available for the current track.")
+
+st.slider ("Volume ", 
     min_value=0, 
     max_value=100, 
     value=post_retrieve_volume(), 
     step=1,
     key="volume_slider",
     on_change=update_volume)
-
-
-col1, col2, col3, col4 = st.columns(4) 
-col1.button(":previous_track_button:", on_click=previous_track, use_container_width=True)
-col2.button("▶", on_click=play_music, use_container_width=True)
-col3.button(":pause_button:", on_click=pause_music, use_container_width=True)
-col4.button(":next_track_button:", on_click=next_track, use_container_width=True)
 
 
 
