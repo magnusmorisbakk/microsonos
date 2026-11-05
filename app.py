@@ -1,14 +1,15 @@
 # app.py
 import streamlit as st
-from services.sonos import set_volume_level
-from services.sonos import retrieve_volume
-import services.spotify
+   
+from services.sonos_volume import post_retrieve_volume, post_set_volume
+from services.sonos_music_controls import post_play_music, post_pause_music, post_next_track, post_previous_track
+#import services.spotify
 
 st.title("Sonos Controller Interface")
 
 def update_volume():
     volume = st.session_state.volume_slider # Get the current value of the slider
-    success = set_volume_level(volume) 
+    success = post_set_volume(volume) 
     
     if success:
         st.toast(f"Volume set to {volume}%") # Notify the user of volume change
@@ -16,8 +17,7 @@ def update_volume():
         st.error("Failed to connect to the Sonos speaker.")
 
 def play_music():
-    from services.sonos import play_music
-    success = play_music()
+    success = post_play_music()
     
     if success:
         st.toast("Music playback started.")
@@ -25,8 +25,7 @@ def play_music():
         st.error("Failed to start music playback.")
 
 def pause_music():
-    from services.sonos import pause_music
-    success = pause_music()
+    success = post_pause_music()
     
     if success:
         st.toast("Music playback paused.")
@@ -34,7 +33,7 @@ def pause_music():
         st.error("Failed to pause music playback.")
 
 def next_track():
-    success = services.spotify.next_track()
+    success = post_next_track()
     
     if success:
         st.toast("Skipped to the next track.")
@@ -42,7 +41,7 @@ def next_track():
         st.error("Failed to skip to the next track.")
 
 def previous_track():
-    success = services.spotify.previous_track()
+    success = post_previous_track()
     
     if success:
         st.toast("Went back to the previous track.")
@@ -59,32 +58,32 @@ def previous_track():
 
 # Links a slider to the update_volume function
 
-@st.fragment(run_every="5s")
-def display_current_album():
-    image_url = services.spotify.get_currently_playing()
+#@st.fragment(run_every="5s")
+#def display_current_album():
+    #image_url = services.spotify.get_currently_playing()
 
-    col1, col2, col3 = st.columns([1,2,1])
+    #col1, col2, col3 = st.columns([1,2,1])
 
-    with col2:
-        if image_url:
-            col2.image(image_url, width=250)
+    #with col2:
+        #if image_url:
+            #col2.image(image_url, width=250)
 
-display_current_album()
+#display_current_album()
 
 st.slider ("Volume Level", 
     min_value=0, 
     max_value=100, 
-    value=retrieve_volume(), 
+    value=post_retrieve_volume(), 
     step=1,
     key="volume_slider",
     on_change=update_volume)
 
 
 col1, col2, col3, col4 = st.columns(4) 
-col1.button(":previous_track_button:", on_click=previous_track, use_container_width=True)
-col2.button("▶", on_click=play_music, use_container_width=True)
-col3.button(":pause_button:", on_click=pause_music, use_container_width=True)
-col4.button(":next_track_button:", on_click=next_track, use_container_width=True)
+col1.button(":previous_track_button:", on_click=post_previous_track, use_container_width=True)
+col2.button("▶", on_click=post_play_music, use_container_width=True)
+col3.button(":pause_button:", on_click=post_pause_music, use_container_width=True)
+col4.button(":next_track_button:", on_click=post_next_track, use_container_width=True)
 
 
 
