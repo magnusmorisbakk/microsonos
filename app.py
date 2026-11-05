@@ -1,4 +1,6 @@
 # app.py
+from importlib.metadata import metadata
+
 import streamlit as st
 import xml.etree.ElementTree as ET
    
@@ -57,50 +59,62 @@ def update_volume():
 
 # ------ Currently Playing ------
 
-track_info = get_sonos_playback_info()
+@st.fragment(run_every=1)
+def display_playback():
+    track_info = get_sonos_playback_info()
+
+    with st.container(border=True):
+        if track_info:
+            metadata = track_info['trackMetaData']
+
+            if metadata:
+                try:
+                    root = ET.fromstring(metadata)
+
+                    namespace = {'dc': 'http://purl.org/dc/elements/1.1/', 
+                                'upnp': 'urn:schemas-upnp-org:metadata-1-0/upnp/'
+                                 }
+            
+                    title = root.find('.//dc:title', namespace)
+                    artist = root.find('.//dc:creator', namespace)
+                    album = root.find('.//upnp:album', namespace)
+                    album_art = root.find('.//upnp:albumArtURI', namespace)
+
+                    col1, col2 = st.columns([1, 2])
+
+                    with col1:
+                        if album_art is not None and album_art.text:
+                            album_art_url = album_art.text
+                            st.image(album_art_url, width='content')
+
+                    with col2:
+                        st.markdown(title.text if title is not None else 'Unknown')
+                        st.markdown(artist.text if artist is not None else 'Unknown')
+                        st.markdown(album.text if album is not None else 'Unknown')
+
+                    st.write("")
+
+                    
+                except ET.ParseError:
+                    st.error("Failed to parse track metadata.")
+            else:
+                st.write("No metadata available for the current track.")
+
+display_playback()
+
+# ------ Playback Controls ------
 
 with st.container(border=True):
-    if track_info:
-        metadata = track_info['trackMetaData']
+    col_prev, col_play, col_pause, col_next = st.columns(4)
 
-        if metadata:
-            try:
-                root = ET.fromstring(metadata)
-
-                namespace = {'dc': 'http://purl.org/dc/elements/1.1/', 
-                             'upnp': 'urn:schemas-upnp-org:metadata-1-0/upnp/'
-                             }
-            
-                title = root.find('.//dc:title', namespace)
-                artist = root.find('.//dc:creator', namespace)
-                album = root.find('.//upnp:album', namespace)
-                album_art = root.find('.//upnp:albumArtURI', namespace)
-
-                col1, col2 = st.columns([1, 2])
-
-                with col1:
-                    if album_art is not None and album_art.text:
-                        album_art_url = album_art.text
-                        st.image(album_art_url, width='content')
-
-                with col2:
-                    st.markdown(title.text if title is not None else 'Unknown')
-                    st.markdown(artist.text if artist is not None else 'Unknown')
-                    st.markdown(album.text if album is not None else 'Unknown')
-
-                st.write("")
-
-                col_prev, col_play, col_pause, col_next = st.columns(4)
-
-                col_prev.button(":previous_track_button:", on_click=previous_track, use_container_width=True)
-                col_play.button("▶", on_click=play_music, use_container_width=True)
-                col_pause.button(":pause_button:", on_click=pause_music, use_container_width=True)
-                col_next.button(":next_track_button:", on_click=next_track, use_container_width=True)
-
-            except ET.ParseError:
-                st.error("Failed to parse track metadata.")
-        else:
-            st.write("No metadata available for the current track.")
+    with col_prev:
+        col_prev.button(":previous_track_button:", on_click=previous_track, use_container_width=True)
+    with col_play:
+        col_play.button("▶", on_click=play_music, use_container_width=True)
+    with col_pause:
+        col_pause.button(":pause_button:", on_click=pause_music, use_container_width=True)
+    with col_next:
+        col_next.button(":next_track_button:", on_click=next_track, use_container_width=True)
 
 st.slider ("Volume ", 
     min_value=0, 
