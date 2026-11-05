@@ -1,11 +1,46 @@
 # app.py
 import streamlit as st
+import xml.etree.ElementTree as ET
    
 from services.sonos_volume import post_retrieve_volume, post_set_volume
 from services.sonos_music_controls import post_play_music, post_pause_music, post_next_track, post_previous_track
-#import services.spotify
+from services.sonos_currently_playing import get_sonos_playback_info
 
 st.title("Sonos Controller Interface")
+
+track_info = get_sonos_playback_info()
+
+if track_info:
+    st.subheader("Now Playing")
+
+    metadata = track_info['trackMetaData']
+    if metadata:
+        try:
+            root = ET.fromstring(metadata)
+
+            namespace = {'dc': 'http://purl.org/dc/elements/1.1/', 
+                         'upnp': 'urn:schemas-upnp-org:metadata-1-0/upnp/'
+                         }
+            
+            title = root.find('.//dc:title', namespace)
+            artist = root.find('.//dc:creator', namespace)
+            album = root.find('.//upnp:album', namespace)
+            album_art = root.find('.//upnp:albumArtURI', namespace)
+
+            if album_art is not None and album_art.text:
+                album_art_url = album_art.text
+                st.image(album_art_url, width=200)
+
+            st.write(f"Title: {title.text if title is not None else 'Unknown'}")
+            st.write(f"Artist: {artist.text if artist is not None else 'Unknown'}")
+            st.write(f"Album: {album.text if album is not None else 'Unknown'}")
+            
+
+        except ET.ParseError:
+            st.error("Failed to parse track metadata.")
+    else:
+        st.write("No metadata available for the current track.")
+
 
 def update_volume():
     volume = st.session_state.volume_slider # Get the current value of the slider
@@ -48,28 +83,6 @@ def previous_track():
     else:
         st.error("Failed to go back to the previous track.")
 
-#def currently_playing():
-    #success = services.spotify.get_currently_playing()
-
-    #if success:
-       # st.toast({success})
-    #else:
-        #st.error("Failed to retrieve current playing song.")
-
-# Links a slider to the update_volume function
-
-#@st.fragment(run_every="5s")
-#def display_current_album():
-    #image_url = services.spotify.get_currently_playing()
-
-    #col1, col2, col3 = st.columns([1,2,1])
-
-    #with col2:
-        #if image_url:
-            #col2.image(image_url, width=250)
-
-#display_current_album()
-
 st.slider ("Volume Level", 
     min_value=0, 
     max_value=100, 
@@ -80,10 +93,10 @@ st.slider ("Volume Level",
 
 
 col1, col2, col3, col4 = st.columns(4) 
-col1.button(":previous_track_button:", on_click=post_previous_track, use_container_width=True)
-col2.button("▶", on_click=post_play_music, use_container_width=True)
-col3.button(":pause_button:", on_click=post_pause_music, use_container_width=True)
-col4.button(":next_track_button:", on_click=post_next_track, use_container_width=True)
+col1.button(":previous_track_button:", on_click=previous_track, use_container_width=True)
+col2.button("▶", on_click=play_music, use_container_width=True)
+col3.button(":pause_button:", on_click=pause_music, use_container_width=True)
+col4.button(":next_track_button:", on_click=next_track, use_container_width=True)
 
 
 
