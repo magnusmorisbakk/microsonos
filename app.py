@@ -1,6 +1,4 @@
 # app.py
-from importlib.metadata import metadata
-
 import streamlit as st
 import xml.etree.ElementTree as ET
    
@@ -57,6 +55,15 @@ def update_volume():
     else:
         st.error("Failed to connect to the Sonos speaker.")
 
+
+# ------ Playback Progress ------
+
+def time_to_seconds(time_str):
+    """Convert a time string in the format HH:MM:SS to total seconds."""
+    h, m, s = map(int, time_str.split(':'))
+    return h * 3600 + m * 60 + s
+
+
 # ------ Currently Playing ------
 
 @st.fragment(run_every=1)
@@ -92,8 +99,23 @@ def display_playback():
                         st.markdown(artist.text if artist is not None else 'Unknown')
                         st.markdown(album.text if album is not None else 'Unknown')
 
-                    st.write("")
+                    current_time = time_to_seconds(track_info["relTime"])
+                    total_time = time_to_seconds(track_info["trackDuration"])
 
+                    if total_time > 0:
+                        progress = current_time / total_time
+
+                        st.progress(min(progress, 1.0))
+
+                        col1, col2 = st.columns([1, 0.1])
+
+                        with col1:
+                            st.caption(track_info["relTime"])
+
+                        with col2:
+                            st.caption(
+                                track_info["trackDuration"])
+                        
                     
                 except ET.ParseError:
                     st.error("Failed to parse track metadata.")
